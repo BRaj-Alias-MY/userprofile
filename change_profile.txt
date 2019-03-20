@@ -1,0 +1,1360 @@
+education html:
+===================
+<h2 mat-dialog-title class="heading">Education Details</h2>
+<form [formGroup]="educationForm" (ngSubmit)="onEducation()">
+  <mat-dialog-content style="overflow: hidden;">
+    <div class="container-fluid">
+      <div class="col-md-12">
+
+        <div class="row">
+          <div class="col-md-6">
+            <label>Qualification</label>
+            <input class="form-control" type="text" formControlName="education" />
+            <div *ngIf="submitted && f.education.errors" class="invalid-feedback">
+              <div *ngIf="f.education.errors.required">Education is required</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label>University</label>
+            <input class="form-control" type="text" formControlName="university" />
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="col-md-6">
+            <label>Course From</label>
+            <input type="text" formControlName="courseFrom" class="form-control" bsDatepicker [(ngModel)]="myDateValue">
+          </div>
+          <div class="col-md-6">
+            <label>Course To</label>
+            <input class="form-control" formControlName="courseTo" type="text" name="education" bsDatepicker [(ngModel)]="myDateValue2"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <label>Specialization </label>
+            <input class="form-control" formControlName="specilization" type="text" name="education" />
+          </div>
+          <div class="col-md-6">
+            <label>Grade </label>
+            <input class="form-control" formControlName="grade" type="text" name="education" />
+          </div>
+        </div>
+
+        <div class="row">
+          <h5 style="font-weight:bold;margin-left:10px;color:blue">{{successmsg}}</h5>
+          <br/>
+          <span style="color:red;font-size:11px;font-style:italic;">Note: All Fields Mandatory*</span>
+        </div>
+
+
+      </div>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions style="float:right">
+    <div style="margin-right:10px; ">
+      <button type="button" [disabled]="isDisabled" class="btn btn-danger " (click)="close() ">Close</button>
+      &nbsp;
+      <button [disabled]="isDisabled" *ngIf="educationForm.valid" class="btn btn-success ">Success</button>
+    </div>
+  </mat-dialog-actions>
+</form>
+
+=============
+education component: 
+
+import { Component, OnInit } from '@angular/core';
+import { Route, Router } from '@angular/router';
+import { MatDialogRef } from "@angular/material";
+import { Userprofile2Component } from '../userprofile2/userprofile2.component';
+import { HttpClient } from "@angular/common/http";
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Education } from "../education/education";
+
+declare var $: any;
+@Component({
+  selector: 'app-education',
+  templateUrl: './education.component.html',
+  styleUrls: ['./education.component.css']
+})
+export class EducationComponent implements OnInit {
+  myDateValue: Date;
+  myDateValue2: Date;
+  educationForm: FormGroup;
+  result: any;
+  successmsg: any;
+  education: Education;
+  EDU_URL = "http://localhost:3000/api/userprofile/saveedu2";
+  isDisabled = false;
+  constructor(
+    private router: Router,
+    private fb: FormBuilder,
+    private http: HttpClient,
+    public dialogRef: MatDialogRef<Userprofile2Component>) {
+    this.education = new Education();
+  }
+  userId = localStorage.getItem('userId');
+  ngOnInit() {
+    this.myDateValue = new Date();
+    this.myDateValue2 = new Date();
+    this.userId = localStorage.getItem('userId');
+    //alert(this.userId);
+    this.educationForm = this.fb.group({
+      education: ['', Validators.required],
+      userId: [this.userId],
+      userProfileId: [this.userId],
+      university: ['', Validators.required],
+      courseFrom: ['', Validators.required],
+      courseTo: ['', Validators.required],
+      specilization: ['', Validators.required],
+      grade: ['', Validators.required],
+    })
+  }
+  close() {
+    // alert('test');
+    this.dialogRef.close("Thanks for using me!");
+    //  window.location.reload();
+
+
+  }
+  success() {
+    this.router.navigate(['/examboard2/testsetup2']);
+    this.dialogRef.close("Thanks for using me!");
+  }
+  onDateChange(newDate: Date) {
+    console.log(newDate);
+  }
+  onEducation() {
+
+
+    this.isDisabled = true;
+    this.education = this.educationForm.value;
+    this.http.post<any>(this.EDU_URL, this.education).subscribe(resp => {
+      console.log(resp['message']);
+      if (resp['message'] == 'Exists') {
+        // alert('ok');
+        this.successmsg = 'Education Title Should be Unique. Already Exists!';
+      }
+      else {
+        this.successmsg = 'Added Successfully';
+      }
+      console.log(resp); this.isDisabled = false;
+    }, err => console.log(err), () => { this.isDisabled = false });
+
+  }
+
+
+
+}
+===========================
+experience html:
+
+===============
+<h2 mat-dialog-title class="heading">Education Details</h2>
+<form [formGroup]="expForm" (ngSubmit)="onExperience()">
+  <mat-dialog-content style="overflow: hidden;">
+    <div class="container-fluid">
+      <div class="col-md-12">
+
+        <div class="row">
+          <div class="col-md-6">
+            <label>Organization</label>
+            <input class="form-control" type="text" formControlName="organizationName" />
+          </div>
+          <div class="col-md-6">
+            <label>Designation</label>
+            <input class="form-control" type="text" formControlName="desgination" />
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="col-md-6">
+            <label>Date of Joining</label>
+            <input type="text" formControlName="joinedDate" class="form-control" bsDatepicker [(ngModel)]="myDateValue">
+          </div>
+          <div class="col-md-6">
+            <label>Date of Releiving: </label>
+            <input class="form-control" formControlName="relivedDate" type="text" name="education" bsDatepicker [(ngModel)]="myDateValue2"
+            />
+          </div>
+        </div>
+
+
+
+        <div class="row">
+          <h5 style="font-weight:bold;margin-left:10px;color:blue">{{successmsg}}</h5>
+          <br/>
+          <span style="color:red;font-size:11px;font-style:italic;">Note: All Fields Mandatory*</span>
+
+        </div>
+
+
+      </div>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions style="float:right">
+    <div style="margin-right:10px; ">
+      <button [disabled]="isDisabled" type="button" class="btn btn-danger " (click)="close()">Close</button>
+      &nbsp;
+      <button [disabled]="isDisabled" class="btn btn-success" *ngIf="expForm.valid">Success</button>
+    </div>
+  </mat-dialog-actions>
+</form>
+===============================
+experience  comp: 
+==================
+
+import { Component, OnInit } from '@angular/core';
+import { Route, Router } from '@angular/router';
+import { MatDialogRef } from "@angular/material";
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Userprofile2Component } from '../userprofile2/userprofile2.component';
+import { HttpClient } from "@angular/common/http";
+import { Experience } from "../experience/experience";
+declare var $: any;
+@Component({
+  selector: 'app-experience',
+  templateUrl: './experience.component.html',
+  styleUrls: ['./experience.component.css']
+})
+export class ExperienceComponent implements OnInit {
+  experience: Experience;
+  myDateValue: Date;
+  myDateValue2: Date;
+  userId = localStorage.getItem('userId');
+  expForm: FormGroup;
+  successmsg: any;
+  isDisabled = false;
+  EXP_URL = "http://localhost:3000/api/userprofile/saveexp2";
+  constructor(
+    private router: Router,
+    private fb: FormBuilder,
+    private http: HttpClient,
+    public dialogRef: MatDialogRef<Userprofile2Component>) {
+    this.experience = new Experience();
+
+  }
+
+  ngOnInit() {
+    this.userId = localStorage.getItem('userId');
+    this.myDateValue = new Date();
+    this.myDateValue2 = new Date();
+    this.expForm = this.fb.group({
+      userId: [this.userId],
+      userProfileId: [this.userId],
+      organizationName: ['', Validators.required],
+      desgination: ['', Validators.required],
+      joinedDate: ['', Validators.required],
+      relivedDate: ['', Validators.required]
+
+
+
+    });
+  }
+  onExperience() {
+    this.isDisabled = true;
+    this.experience = this.expForm.value;
+    if (this.experience != null) {
+
+
+      this.http.post<any>(this.EXP_URL, this.experience).subscribe(resp => {
+        console.log(resp['message']);
+        if (resp['message'] == 'Exists') {
+          // alert('ok');
+          this.successmsg = 'Education Title Should be Unique. Already Exists!';
+        }
+        else {
+          this.successmsg = 'Added Successfully';
+        }
+        console.log(resp); this.experience = null;
+        this.isDisabled = false;
+      }, err => console.log(err));
+
+    }
+  }
+  close() {
+    //alert('test');
+    this.dialogRef.close("Thanks for using me!");
+    //window.location.reload();
+
+
+  }
+}
+
+============================
+user profile html: 
+
+=====================
+<div class="main-panel">
+    <nav class="navbar navbar-default" style="height:200px;z-index: -99;    border: 0px !important;border-radius: 0px !important;">
+        <div class=" container-fluid ">
+            <div class="navbar-header ">
+                <button type="button " class="navbar-toggle ">
+                    <span class="sr-only ">Toggle navigation</span>
+                    <span class="icon-bar bar1 "></span>
+                    <span class="icon-bar bar2 "></span>
+                    <span class="icon-bar bar3 "></span>
+                </button>
+                <a class="navbar-brand " href="#" style="color:white">User Profile</a>
+            </div>
+            <div class="collapse navbar-collapse ">
+                <ul class="nav navbar-nav navbar-right">
+
+                    <li>
+                        <a style="cursor:pointer" (click)="logout()">
+                            <i (click)="logout()" style="font-size:22px;top:-10px;color:white !important;" class="ti-export"></i>
+                        </a>
+                    </li>
+                </ul>
+
+
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="content " style="margin-top: -110px !important; ">
+        <div class="container-fluid ">
+            <div class="row ">
+                <div class="col-lg-4 col-md-5 ">
+                    <div class="card card-user table-responsive" style="overflow-x: hidden">
+                        <div class="image ">
+                            <img src="assets/images/background.jpg " alt="... " />
+                        </div>
+                        <div class="content ">
+                            <div class="author ">
+                                <img class="avatar border-white " src="assets/images/profileicon.png" alt="... " />
+                                <h4 class="title ">{{email}}
+                                    <br />
+
+                                </h4>
+                            </div>
+
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <div class="row">
+                                <div class="col-md-3 col-md-offset-1">
+                                    <h5>
+                                        <br />
+                                        <small> </small>
+                                    </h5>
+                                </div>
+                                <div class="col-md-4">
+                                    <h5>
+                                        <br />
+                                        <small></small>
+                                    </h5>
+                                </div>
+                                <div class="col-md-3">
+                                    <h5>
+                                        <br />
+                                        <small> </small>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-8 col-md-7">
+                    <div class="card table-responsive">
+                        <div class="header">
+                            <h4 class="title">Edit Profile</h4>
+                        </div>
+                        <div class="content">
+                            <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>About Yourself: </label>
+                                            <input formControlName="about" type="text" class="form-control border-input" placeholder="Enter Details here" [(ngModel)]="userprofile.about">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="padding-left:12px;">
+                                        <div class="form-group">
+                                            <label>Address</label>
+                                            <input formControlName="adress" type="text" class="form-control border-input" placeholder="Enter Address here" [(ngModel)]="userprofile.adress">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" style="padding-left:12px;">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Pin Code: </label>
+                                            <input formControlName="pincode" type="text" class="form-control border-input" placeholder="Enter Pin Code here" [(ngModel)]="userprofile.pincode">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6" style="padding-left:12px;">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Linkedn Profile Link: </label>
+                                            <input formControlName="linkedinId" type="text" class="form-control border-input" [(ngModel)]="userprofile.linkedinId" placeholder="Enter Linkedn Profile here">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6" style="padding-left:12px;">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Uplaod Resume: </label>
+                                            <input formControlName="resume" type="file" class="" placeholder="">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="text-center">
+                                    <button style="border-radius: 6px !important;" mat-raised-button color="accent">Save Details</button>
+
+                                    <p *ngIf="result" style="font-weight:bold;margin-top:10px;">{{result}}</p>
+                                </div>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- education details-->
+
+                <div class="col-lg-12 col-md-12">
+                    <div class="card table-responsive">
+                        <div class="header">
+                            <h4 class="title" style="float:left;">Education Details</h4>
+                            <div style="float:right;">
+                                <i (click)="openDialog()" style="cursor: pointer" class="material-icons">
+                                    add
+                                </i>
+                            </div>
+
+                            <table class="table table-stripped">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Title</th>
+                                        <th>University/School</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Grade</th>
+                                        <th>Specialization</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let data of edu; index as i">
+                                        <td>{{i+1}}</td>
+                                        <td>{{data.education}}</td>
+                                        <td>{{data.university}}</td>
+                                        <td>{{data.courseFrom | date }}</td>
+                                        <td>{{data.courseTo | date }}</td>
+                                        <td>{{data.specilization}}</td>
+                                        <td>{{data.grade}}</td>
+                                        <td>
+                                            <a routerLink="/examboard2/userprofile2" (click)="deleteEdu(data.id,data.education)">
+                                                <i style="cursor:pointer;color:rgb(196, 27, 27);" class="material-icons">
+                                                    remove_circle
+                                                </i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="8" *ngIf="edu.length<=0">
+                                            No data found!
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <div class="content">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-12">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- exp details-->
+
+                <div class="col-lg-12 col-md-12">
+                    <div class="card  table-responsive">
+                        <div class="header">
+                            <h4 class="title" style="float:left;">Experience Details</h4>
+                            <div style="float:right;">
+                                <i (click)="openDialog2()" style="cursor: pointer" class="material-icons">
+                                    add
+                                </i>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-stripped">
+                                            <thead>
+                                                <tr>
+                                                    <th>S.No</th>
+                                                    <th>Organization</th>
+                                                    <th>Designation</th>
+                                                    <th>Joining Date</th>
+                                                    <th>Releived Date</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let e of exp; index as i">
+                                                    <td>{{i+1}}</td>
+                                                    <td>{{e.organizationName}}</td>
+                                                    <td>{{e.desgination}}</td>
+                                                    <td>{{e.joinedDate | date }}</td>
+                                                    <td>{{e.relivedDate | date }}</td>
+                                                    <td>
+                                                        <i (click)="deleteExp(e.id,e.organizationName)" style="cursor:pointer;color:rgb(196, 27, 27);" class="material-icons">
+                                                            remove_circle
+                                                        </i>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="6" *ngIf="exp.length<=0">
+                                                        No data found!
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer class="footer ">
+        <div class="container-fluid ">
+            <nav class="pull-left ">
+
+            </nav>
+            <div class="copyright pull-right ">
+                &copy; made with
+                <i class="fa fa-heart heart "></i> by
+                <a href="# ">InterviewBuddy</a>
+            </div>
+        </div>
+    </footer>
+	===================
+	user profile comp 
+	=====================
+	
+	import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { EducationComponent } from '../education/education.component';
+import { ExperienceComponent } from '../experience/experience.component';
+import { HttpClient } from "@angular/common/http";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import { Router } from "@angular/router";
+import { Profile } from "../userprofile2/profile";
+import { Test } from "../userprofile2/test";
+import { ApiService } from '../../../services/api.service';
+@Component({
+  selector: 'app-userprofile2',
+  templateUrl: './userprofile2.component.html',
+  styleUrls: ['./userprofile2.component.css']
+})
+export class Userprofile2Component implements OnInit {
+  profileForm: FormGroup;
+  userId = localStorage.getItem('userId');
+  userprofile: Profile;
+  email = localStorage.getItem('email');
+  result: any;
+  students: any[];
+  studentsdata: any[] = [{}];
+  edu = [];
+  exp = [];
+  baseUrl = "http://localhost:3000/api/";
+  GET_EDU_URL = this.baseUrl + "userprofile/getedu";
+  GET_EXP_URL = this.baseUrl + "userprofile/getexp";
+  DELETE_EDU_URL = this.baseUrl + "userprofile/deleteedu/";
+  DELETE_EXP_URL = this.baseUrl + "userprofile/deleteexp/";
+  PROFILE_URL = this.baseUrl + "userprofile/saveprofile2/";
+  POST_FILE_URL = this.baseUrl + "userprofile/upload/";
+  GET_USER_URL = this.baseUrl + "userprofile/getprofile/" + localStorage.getItem('userId');
+
+  constructor(private api: ApiService, private router: Router, private http: HttpClient, private dialog: MatDialog, private fb: FormBuilder) {
+    this.userprofile = new Profile();
+    this.userId = localStorage.getItem('userId');
+    this.email = localStorage.getItem('email');
+
+  }
+
+
+
+  ngOnInit() {
+    this.userId = localStorage.getItem('userId');
+    this.email = localStorage.getItem('email');
+    this.http.get<any[]>(this.GET_EDU_URL).subscribe(res => { this.edu = res; console.log(res) }, err => { console.log(err) });
+    this.http.get<any[]>(this.GET_EXP_URL).subscribe(res => { this.exp = res; console.log(res) }, err => { console.log(err) });
+    this.http.get<any>(this.GET_USER_URL).subscribe(res => { this.userprofile = res[0]; console.log(this.userprofile) }, err => { console.log(err) });
+
+
+    //alert(this.userId);
+    this.profileForm = this.fb.group({
+      about: [''],
+      userId: [this.userId],
+      adress: [''],
+      pincode: [''],
+      linkedinId: [''],
+      resume: ['']
+
+    })
+  }
+
+  onSubmit() {
+    this.userprofile = this.profileForm.value;
+    this.http.post<any>(this.PROFILE_URL, this.userprofile).subscribe(res => { this.result = 'Profile Updated Successfully!'; console.log(res) }, err => console.log(err));
+    // this.http.post<any>(this.POST_FILE_URL,resume)
+    //console.log(this.profileForm['resume']);
+
+  }
+
+  logout() {
+    this.api.logout();
+    this.router.navigate(['/login']);
+  }
+
+  getEdu() {
+    this.http.get<any[]>(this.GET_EDU_URL).subscribe(res => { this.edu = res; console.log(res) }, err => { console.log(err) });
+
+  }
+  getExp() {
+    this.http.get<any[]>(this.GET_EXP_URL).subscribe(res => { this.exp = res; console.log(res) }, err => { console.log(err) });
+
+  }
+
+  openDialog() {
+    this.dialog.open(EducationComponent, {
+      width: '90%',
+      disableClose: true
+
+
+    }).afterClosed().subscribe(result => {
+      console.log(result); console.log('hooo');
+      this.getEdu();
+
+    }, err => console.log(err));
+
+
+
+
+  }
+  openDialog2() {
+    this.dialog.open(ExperienceComponent, {
+      width: '90%',
+      disableClose: true
+
+    }).afterClosed().subscribe(result => {
+      console.log(result); console.log('hooo222');
+      this.getExp();
+
+    }, err => console.log(err));
+
+
+  }
+  deleteEdu(id, education) {
+    //alert(id);
+    return Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete it?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete it!",
+      cancelButtonText: "No, keep it"
+    }).then(result => {
+      if (result.value) {
+        this.http.get(this.DELETE_EDU_URL + id + '/' + education)
+          .subscribe(
+            res => {
+              Swal.fire({
+                type: 'success',
+                title: 'Deleted!',
+                text: 'The Record has been deleted.',
+              })
+              console.log(res)
+            }
+            , err => { console.log(err) },
+            () => { this.getEdu(); });
+
+        return this.router.navigate(["/examboard2/userprofile2"]);
+        Swal.fire("Success", "Your imaginary data is safe :)", "success");
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire("Cancelled", "Your imaginary data is safe :)", "error");
+      }
+    });
+  }
+  deleteExp(id, organizationName) {
+    //  alert(id);
+    //this.http.get(this.DELETE_EXP_URL + id + '/' + organizationName).subscribe(res => console.log(res), err => console.log(err), () => this.getExp());
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete it?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete it!",
+      cancelButtonText: "No, keep it"
+    }).then(result => {
+      if (result.value) {
+        this.http.get(this.DELETE_EXP_URL + id + '/' + organizationName).subscribe(res => {
+          console.log(res)
+          Swal.fire({
+            type: 'success',
+            title: 'Deleted!',
+            text: 'The Record has been deleted.',
+          })
+          console.log(res)
+        }, err => console.log(err), () => this.getExp());
+        // return window.location.href = "/examboard2/userprofile2";
+        return true;
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire("Cancelled", "Your imaginary data is safe :)", "error");
+      }
+    });
+
+
+
+  }
+
+
+}
+====================
+node controller: userprofile 
+=========================
+let app = require ('express');
+let router = app.Router ();
+let userprofile = require ('../models').user_profile;
+let userprofile_edu = require ('../models').user_profile_edu;
+let userprofile_exp = require ('../models').user_profile_exp;
+let sequelize = require ('../models').sequelize;
+const Op = sequelize.Op;
+
+var multer = require ('multer');
+const path = require ('path');
+//var upload = multer({ dest: 'uploads/' })
+
+let storage = multer.diskStorage ({
+  destination: (req, file, cb) => {
+    cb (null, './uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb (
+      null,
+      file.fieldname +
+        '-' +
+        Date.now () +
+        '.' +
+        path.extname (file.originalname)
+    );
+  },
+});
+let upload = multer ({storage: storage});
+
+router.post ('/upload', upload.single ('doc'), (req, res) => {
+  console.log (req);
+  if (!req.file) {
+    console.log ('No file received');
+    return res.send ({
+      success: false,
+    });
+  } else {
+    console.log ('file received');
+    return res.send ({
+      success: true,
+    });
+  }
+});
+
+router.get ('/', (req, res) => {
+  if (req.auth.access.gridAccess) {
+    userprofile
+      .findAll ()
+      .then (user => {
+        if (user) {
+          res.send ({status: true, data: user, access: req.auth.access});
+        } else {
+          res.send ({status: false, message: 'fail'});
+        }
+      })
+      .catch (function (error) {
+        res.status (500).send ('Internal Server Error');
+      });
+  } else {
+    res.send ({
+      status: false,
+      message: 'Un Authroized',
+      access: [req.auth.access],
+    });
+  }
+});
+
+router.post ('/', (req, res) => {
+  userprofile
+    .findOne ({where: {about: req.body.about}})
+    .then (user => {
+      if (user) {
+        res.send ({status: false, message: 'Data Already Exist.'});
+      } else {
+        //============= insert query =====================
+        /* userprofile.afterCreate(function(model, options, done) {//hook1 resume
+                  model.auth = req.auth ? req.auth.userId : 0;
+              });*/
+        let user_data = req.body;
+        userprofile
+          .create (
+            {
+              about: user_data.about,
+              adress: user_data.address,
+              pincode: user_data.pincode,
+              linkedinId: user_data.linkedin,
+              resume: user_data.resume,
+              userId: req.auth.userId,
+            },
+            {transaction: t}
+          )
+          .then (async pro => {
+            for (let i = 0; i < user_data.edu.length; i++) {
+              await userprofile_edu.afterCreate (function (
+                model,
+                options,
+                done
+              ) {
+                //hook1
+                model.auth = req.auth ? req.auth.userId : 0;
+              });
+              await userprofile_edu
+                .create (
+                  {
+                    userProfileId: pro.id,
+                    education: user_data.edu[i].educationname,
+                    university: user_data.edu[i].university,
+                    courseFrom: user_data.edu[i].coursefrom,
+                    courseTo: user_data.edu[i].courseto,
+                    specilization: user_data.edu[i].specialization,
+                    grade: user_data.edu[i].grade,
+                  },
+                  {transaction: t}
+                )
+                .then (async pro => {
+                  for (let i = 0; i < user_data.exp.length; i++) {
+                    await userprofile_edu.afterCreate (function (
+                      model,
+                      options,
+                      done
+                    ) {
+                      //hook1
+                      model.auth = req.auth ? req.auth.userId : 0;
+                    });
+                    await userprofile_exp.create (
+                      {
+                        userProfileId: pro.id,
+                        organizationName: user_data.exp[i].organizationame,
+                        desgination: user_data.exp[i].designation,
+                        joinedDate: user_data.exp[i].joineddate,
+                        relivedDate: user_data.exp[i].reliveddate,
+                      },
+                      {transaction: t}
+                    );
+                  }
+                  return true;
+                })
+                .then (result => {
+                  res.send ({status: true, message: 'Success'});
+                })
+                .catch (err => {
+                  res.send ({status: false, message: 'fail'});
+                });
+            }
+            return true;
+          })
+          .then (result => {
+            res.send ({status: true, message: 'Success'});
+          })
+          .catch (err => {
+            res.send ({status: false, message: 'fail'});
+          });
+      }
+    })
+    .catch (function (error) {
+      console.log (error);
+      res.status (500).send ('Internal Server Error');
+    });
+});
+
+router.post ('/profilesave', (req, res) => {
+  userprofile
+    .findOne ({where: {userId: req.auth.userId}})
+    .then (profileData => {
+      let userData = req.body;
+      userData['userId'] = req.auth.userId;
+      if (profileData) {
+        //============= update data =========================
+        userprofile
+          .update (userData, {where: {id: profileData.id}})
+          .then (data => {
+            userData['id'] = profileData.id;
+            res.send ({status: true, response: 'success', data: userData});
+          })
+          .catch (err => {
+            res.send ({status: false, message: 'fail'});
+          });
+      } else {
+        //============= insert data ========================
+        userprofile
+          .create (userData)
+          .then (data => {
+            res.send ({status: true, response: 'success', data: data});
+          })
+          .catch (err => {
+            res.send ({status: false, message: 'fail'});
+          });
+      }
+    })
+    .catch (err => {
+      console.log (err);
+      res.send ({status: false, message: 'fail'});
+    });
+});
+
+router.post ('/saveprofile2', (req, res) => {
+  sequelize
+    .query ('delete from user_profile where userId=' + req.body.userId, {
+      type: sequelize.QueryTypes.DELETE,
+    })
+    .then (data => {
+      sequelize
+        .query (
+          "insert into user_profile(userId,about,adress,pincode,linkedinId,resume) values('" +
+            req.body.userId +
+            "','" +
+            req.body.about +
+            "','" +
+            req.body.adress +
+            "','" +
+            req.body.pincode +
+            "','" +
+            req.body.linkedinId +
+            "','" +
+            req.body.resume +
+            "')",
+          {type: sequelize.QueryTypes.INSERT}
+        )
+        .then (data => {
+          if (data) {
+            res.send ({status: true});
+          } else {
+            res.send ({status: true});
+          }
+        });
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+});
+
+router.post ('/saveedu2', (req, res) => {
+  console.log (req);
+  userprofile_edu
+    .findOne ({where: {education: req.body.education}})
+    .then (data => {
+      if (data) {
+        res.send ({message: 'Exists'});
+      } else {
+        sequelize
+          .query (
+            "insert into user_profile_edu(userProfileId,education,university,courseFrom,courseTo,specilization,grade) values('" +
+              req.body.userProfileId +
+              "','" +
+              req.body.education +
+              "','" +
+              req.body.university +
+              "','" +
+              req.body.courseFrom +
+              "','" +
+              req.body.courseTo +
+              "','" +
+              req.body.specilization +
+              "','" +
+              req.body.grade +
+              "')",
+            {type: sequelize.QueryTypes.INSERT}
+          )
+          .then (data => {
+            if (data) res.send ({message: 'Inserted'});
+            else res.send ({message: 'Not Inserted !'});
+          })
+          .catch (err => {
+            res.send ('unable to access');
+          });
+      }
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+});
+
+router.post ('/saveexp2', (req, res) => {
+  console.log (req);
+  userprofile_exp
+  .findOne ({where: {organizationName: req.body.organizationName}})
+  .then (data => {
+    if (data) {
+      res.send ({message: 'Exists'});
+    } else {
+
+  sequelize
+    .query (
+      "insert into  user_profile_exp(userProfileId,organizationName,desgination,joinedDate,relivedDate) values('" +
+        req.body.userProfileId +
+        "','" +
+        req.body.organizationName +
+        "','" +
+        req.body.desgination +
+        "','" +
+        req.body.joinedDate +
+        "','" +
+        req.body.relivedDate +
+        "')",
+      {type: sequelize.QueryTypes.INSERT}
+    )
+    .then (data => {
+      if (data) res.send ({message: 'Inserted'});
+      else res.send ({message: 'Not Inserted !'});
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+  }
+})
+.catch (err => {
+  res.send ('unable to access');
+});
+
+});
+
+router.get ('/getedu', (req, res) => {
+  console.log (req);
+  sequelize
+    .query (
+      'select   * from user_profile_edu group by education order by id desc',
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    )
+    .then (data => {
+      if (data) res.send (data);
+      else res.send ({message: 'no data !'});
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+});
+
+router.get ('/getprofile/:userId', (req, res) => {
+  console.log (req);
+  sequelize
+    .query ('select   * from user_profile where userId=' + req.params.userId, {
+      type: sequelize.QueryTypes.SELECT,
+    })
+    .then (data => {
+      if (data) res.send (data);
+      else res.send ({message: 'no data !'});
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+});
+
+router.get ('/deleteedu/:id/:education', (req, res) => {
+  console.log (req);
+  sequelize
+    .query (
+      "delete from user_profile_edu where id='" +
+        req.params.id +
+        "' and education='" +
+        req.params.education +
+        "'",
+      {
+        type: sequelize.QueryTypes.DELETE,
+      }
+    )
+    .then (data => {
+      if (data) res.send ({message: 'Deleted'});
+      else res.send ({message: 'no data !'});
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+});
+
+router.get ('/deleteexp/:id/:organizationName', (req, res) => {
+  console.log (req);
+  sequelize
+    .query (
+      "delete from user_profile_exp where id='" +
+        req.params.id +
+        "' and organizationName='" +
+        req.params.organizationName +
+        "'",
+      {
+        type: sequelize.QueryTypes.DELETE,
+      }
+    )
+    .then (data => {
+      if (data) res.send ({message: 'Deleted'});
+      else res.send ({message: 'no data !'});
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+});
+
+router.get ('/getexp', (req, res) => {
+  console.log (req);
+  sequelize
+    .query (
+      'select * from user_profile_exp group by organizationName order by id desc',
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    )
+    .then (data => {
+      if (data) res.send (data);
+      else res.send ({message: 'no data !'});
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+});
+
+router.post ('/saveedu', (req, res) => {
+  console.log ('testing new.............');
+  userprofile
+    .findOne ({where: {userId: req.auth.userId}})
+    .then (profileData => {
+      if (profileData) {
+        return sequelize
+          .transaction (t => {
+            userprofile_edu.afterBulkDestroy (function (options) {
+              //hook1
+              options.auth = req.auth ? req.auth.userId : 0;
+              options.mdl = 'userprofile_edu';
+            });
+            return userprofile_edu
+              .destroy (
+                {where: {userProfileId: profileData.id}},
+                {trancation: t}
+              )
+              .then (deldata => {
+                let userdata = req.body.map ((v, i) => {
+                  return {
+                    userProfileId: profileData.id,
+                    education: v.education,
+                    university: v.university,
+                    courseFrom: v.courseFrom,
+                    courseTo: v.courseTo,
+                    specilization: v.specilization,
+                    grade: v.grade,
+                  };
+                });
+                return userprofile_edu.bulkCreate (userdata, {transcation: t});
+              })
+              .catch (err => {
+                res.send ({status: false, message: 'fail'});
+              });
+          })
+          .then (result => {
+            res.send ({status: true, message: 'success'});
+          })
+          .catch (err => {
+            console.log (err);
+            res.send ({status: false, message: 'fail'});
+          });
+      } else {
+        res.send ({status: false, message: 'Please save profile first.'});
+      }
+    })
+    .catch (err => {
+      console.log (err);
+      res.send ({status: false, message: 'fail'});
+    });
+});
+
+router.post ('/saveexp', (req, res) => {
+  userprofile
+    .findOne ({where: {userId: req.auth.userId}})
+    .then (profileData => {
+      if (profileData) {
+        return sequelize
+          .transaction (t => {
+            userprofile_exp.afterBulkDestroy (function (options) {
+              //hook1
+              options.auth = req.auth ? req.auth.userId : 0;
+              options.mdl = 'userprofile_exp';
+            });
+            return userprofile_exp
+              .destroy (
+                {where: {userProfileId: profileData.id}},
+                {trancation: t}
+              )
+              .then (deldata => {
+                let userdata = req.body.map ((v, i) => {
+                  return {
+                    userProfileId: profileData.id,
+                    organizationName: v.organizationName,
+                    desgination: v.desgination,
+                    joinedDate: v.joinedDate,
+                    relivedDate: v.relivedDate,
+                  };
+                });
+                return userprofile_exp.bulkCreate (userdata, {transcation: t});
+              })
+              .catch (err => {
+                res.send ({status: false, message: 'fail'});
+              });
+          })
+          .then (result => {
+            res.send ({status: true, message: 'success'});
+          })
+          .catch (err => {
+            console.log (err);
+            res.send ({status: false, message: 'fail'});
+          });
+      } else {
+        res.send ({status: false, message: 'Please save profile first.'});
+      }
+    })
+    .catch (err => {
+      console.log (err);
+      res.send ({status: false, message: 'fail'});
+    });
+});
+
+module.exports = router;
+===============================
+login comp 
+=============
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { FormGroup, FormArray, FormControl } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
+import { Validators } from '@angular/forms';
+import { ValidationService } from '../../services/validation.service';
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+
+
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent implements OnInit {
+  user: usr;
+  userdata: any;
+  constructor(private fb: FormBuilder, private api: ApiService, private router: Router, private loading: NgxSpinnerService) {
+
+  }
+
+  ngOnInit() {
+    this.user = {
+      email: '',
+      password: ''
+    };
+    if (this.api.getToken()) {
+      if (this.api.getUser().roleId == 5) {
+        localStorage.setItem('email', this.api.getUser().email);
+        localStorage.setItem('userId', this.api.getUser().id);
+        this.router.navigate(['/examboard2/entrypage2']);
+      } else {
+        this.router.navigate(['/main/dashboard']);
+      }
+    }
+  }
+
+  registrationForm = this.fb.group({
+    id: [],
+    fname: ['', ValidationService.alphaValidator],
+    mname: [''],
+    lname: ['', ValidationService.alphaValidator],
+    email: ['', ValidationService.emailValidator],
+    phone: ['', ValidationService.numericValidator],
+    gender: ['', ValidationService.alphaValidator],
+    password: ['']
+
+  });
+
+  login() {
+    //alert('testing');
+    //this.router.navigate(['/main/dashboard']);
+    if (this.user.email && this.user.password) {
+      //this.loading.show();
+
+      this.api.login(this.user).subscribe(res => {
+
+        this.loading.hide();
+        if (res.token) {
+          this.api.storageuserdata(res.token, res.user);
+          this.user = {
+            email: '',
+            password: '',
+          };
+          if (res.user.roleId == 5) {
+            localStorage.setItem('userId', res.user.id);
+            localStorage.setItem('email', res.email);
+
+            this.router.navigate(['/examboard2/entrypage2']);
+          } else {
+            this.router.navigate(['/main/dashboard']);
+          }
+        } else {
+          Swal.fire('Login Fail.', 'Your email or password is incorrect.', 'error');
+          this.user.password = '';
+        }
+      });
+    } else {
+      Swal.fire('Oops..', 'Please fill all fields.', 'error');
+    }
+  }
+
+  onSubmit() {
+    this.api.createuser(this.registrationForm.value).subscribe((res) => {
+      if (res.status) {
+        Swal.fire('Success!', 'You have Sucessfully Registered. Please Login', 'success');
+        this.registrationForm.patchValue({
+          fname: '', mname: '', lname: '', password: '', email: '',
+          phone: '', gender: ''
+        });
+
+      } else {
+        Swal.fire('Oops..', 'Please fill all mandatory fields.', 'error');
+      }
+    });
+  }
+}
+interface usr {
+  email: string,
+  password: string
+}
