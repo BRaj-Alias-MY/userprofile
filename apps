@@ -1,0 +1,90 @@
+appservie:
+============
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+@Injectable({
+	providedIn: 'root'
+})
+export class AppService {
+	base = 'http://localhost:3000/api/';
+
+	get_base(): string {
+		return this.base;
+	}
+
+	URL = 'http://localhost:3000/api/asynctest/';
+	POST_URL = 'http://localhost:3000/api/update2';
+	ASYNC_URL = 'http://localhost:3000/api/async/';
+	VERIFYPIN_URL = 'http://localhost:3000/api/verifypin/';
+	UPDATEPIN_URL = 'http://localhost:3000/api/updatepin/';
+	GETINTERVIEWS_URL = 'http://localhost:3000/api/getinterviews/';
+	GETVIDEOS_URL = 'http://localhost:3000/api/getvideos/';
+	constructor(private http: HttpClient) { }
+
+	getQuestion(interviewId: number) {
+		//return this.http.get<any>(this.URL + InterviewId + '/' + userId + '/' + status);
+		return this.http.get<any>(this.get_base() + 'interview/asynctest/' + interviewId);
+	}
+
+	getInterviews() {
+		// return this.http.get<any[]>(this.ASYNC_URL + email + '/' + domain + '/' + subdomain);
+		return this.http.get<any>(this.get_base() + 'interview/getinterviews');
+	}
+	getPin(pin: number) {
+		// return this.http.get<any>(this.VERIFYPIN_URL + pin);
+		return this.http.get<any>(this.get_base() + 'interview/verifypin/' + pin);
+	}
+	getInterviewsList(status: string, email: string) {
+		//return this.http.get<any>(this.GETINTERVIEWS_URL + status + '/' + email);
+		return this.http.get<any>(this.get_base() + 'interview/getCompletedInterviews');
+	}
+	getVideos(email: string, InterviewId: number) {
+		// return this.http.get<any>(this.GETVIDEOS_URL + email + '/' + InterviewId);
+		return this.http.get<any>(this.get_base() + 'interview/videos/' + InterviewId);
+	}
+	postQuestion(uid: string, answer: string, userId: number, status: number, id: number) {
+		// return this.http.post(this.POST_URL, JSON.stringify({ uid: uid, answer: answer, userId: userId, status: status, id: id }))
+		return this.http.post<any>(
+			this.get_base() + 'update',
+			JSON.stringify({ uid: uid, answer: answer, userId: userId, status: status, id: id })
+		);
+	}
+	updatePin(pinupdate) {
+		//  return this.http.post(this.UPDATEPIN_URL, pinupdate);
+
+		return this.http.post<any>(this.get_base() + 'interview/updatepin', pinupdate);
+	}
+	getReviews(id) {
+		//expert-review//user-review/1
+		return this.http.get<any[]>(this.get_base() + 'expert-review/user-review/' + id);
+	}
+	getDashboardTotals(email) {
+		return this.http.get<any>(this.get_base() + 'userprofile/gettotals/' + email);
+	}
+}
+
+===================
+userprofile:
+
+==================
+
+router.get ('/gettotals/:email', (req, res) => {
+  console.log (req);
+  sequelize
+    .query (
+      "select email,(select count(*) from interview_users where status='Available' or status='Verified' or status='Submitted') as activeInterviews,(select count(*) from interview_users where status='Completed') as completedInterviews,(select count(*) from interview_users where paymentStatus='Success' ) as paymentStatus, (select count(*) from interview_users where status='expertreview') as expertReview from interview_users where email='"+req.params.email+"'",
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    )
+    .then (data => {
+      if (data) res.send (data);
+      else res.send ({message: 'no data !'});
+    })
+    .catch (err => {
+      res.send ('unable to access');
+    });
+});
