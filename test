@@ -1,0 +1,18 @@
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+
+
+  datePickerConfig: Partial<BsDatepickerConfig>;
+  
+  constu: 
+  
+  
+  this.datePickerConfig = Object.assign({}, {
+      containerClass: 'theme-dark-blue',
+      showWeekNumbers: false,
+      minDate: new Date(2019, 3, 22)
+
+    })
+    
+    
+     <input class="form-control" [bsConfig]="datePickerConfig" [showWeekNumbers]="false" readonly formControlName="courseTo" type="text"
+              name="education" bsDatepicker [(ngModel)]="myDateValue2" />
